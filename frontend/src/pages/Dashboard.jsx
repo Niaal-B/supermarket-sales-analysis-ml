@@ -9,12 +9,22 @@ export default function Dashboard() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [shopCount, setShopCount] = useState(0)
+  const [categoryCount, setCategoryCount] = useState(0)
 
   useEffect(() => {
     // Fetch shop count
     api.get('/shops/')
       .then(response => {
         setShopCount(response.data.length)
+      })
+      .catch(() => {
+        // Silently fail - just show 0
+      })
+    
+    // Fetch category count
+    api.get('/products/categories/')
+      .then(response => {
+        setCategoryCount(response.data.length)
       })
       .catch(() => {
         // Silently fail - just show 0
@@ -70,14 +80,14 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Categories</CardTitle>
               <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
               </svg>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Products in catalog</p>
+              <div className="text-2xl font-bold">{categoryCount}</div>
+              <p className="text-xs text-muted-foreground">Product categories</p>
             </CardContent>
           </Card>
 
@@ -122,6 +132,21 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <Button variant="outline" className="w-full">View Shops</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/categories')}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Categories</span>
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+              </CardTitle>
+              <CardDescription>Manage product categories</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full">View Categories</Button>
             </CardContent>
           </Card>
 
