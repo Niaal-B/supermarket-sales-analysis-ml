@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
 import Dashboard from '@/pages/Dashboard'
+import Shops from '@/pages/Shops'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 function AppRoutes() {
@@ -24,6 +25,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/shops"
+        element={
+          <ProtectedRoute>
+            <Shops />
           </ProtectedRoute>
         }
       />

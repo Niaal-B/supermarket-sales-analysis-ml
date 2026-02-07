@@ -1,9 +1,25 @@
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { useNavigate } from 'react-router-dom'
+import api from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function Dashboard() {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const [shopCount, setShopCount] = useState(0)
+
+  useEffect(() => {
+    // Fetch shop count
+    api.get('/shops/')
+      .then(response => {
+        setShopCount(response.data.length)
+      })
+      .catch(() => {
+        // Silently fail - just show 0
+      })
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
@@ -47,7 +63,7 @@ export default function Dashboard() {
               </svg>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{shopCount}</div>
               <p className="text-xs text-muted-foreground">Active shops</p>
             </CardContent>
           </Card>
@@ -88,6 +104,54 @@ export default function Dashboard() {
             <CardContent>
               <div className="text-2xl font-bold">0</div>
               <p className="text-xs text-muted-foreground">Items need restocking</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/shops')}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Shops</span>
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </CardTitle>
+              <CardDescription>Manage shops and branches</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full">View Shops</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-not-allowed opacity-50">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Products</span>
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </CardTitle>
+              <CardDescription>Manage product catalog</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full" disabled>Coming Soon</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-not-allowed opacity-50">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Sales</span>
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </CardTitle>
+              <CardDescription>View sales and reports</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full" disabled>Coming Soon</Button>
             </CardContent>
           </Card>
         </div>
