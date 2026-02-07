@@ -10,6 +10,7 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [shopCount, setShopCount] = useState(0)
   const [categoryCount, setCategoryCount] = useState(0)
+  const [productCount, setProductCount] = useState(0)
 
   useEffect(() => {
     // Fetch shop count
@@ -25,6 +26,15 @@ export default function Dashboard() {
     api.get('/products/categories/')
       .then(response => {
         setCategoryCount(response.data.length)
+      })
+      .catch(() => {
+        // Silently fail - just show 0
+      })
+    
+    // Fetch product count
+    api.get('/products/')
+      .then(response => {
+        setProductCount(response.data.length)
       })
       .catch(() => {
         // Silently fail - just show 0
@@ -93,14 +103,14 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Today's Sales</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Products</CardTitle>
               <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">₹0</div>
-              <p className="text-xs text-muted-foreground">Revenue today</p>
+              <div className="text-2xl font-bold">{productCount}</div>
+              <p className="text-xs text-muted-foreground">Products in catalog</p>
             </CardContent>
           </Card>
 
@@ -150,7 +160,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="cursor-not-allowed opacity-50">
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/products')}>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Products</span>
@@ -161,7 +171,7 @@ export default function Dashboard() {
               <CardDescription>Manage product catalog</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full" disabled>Coming Soon</Button>
+              <Button variant="outline" className="w-full">View Products</Button>
             </CardContent>
           </Card>
 
