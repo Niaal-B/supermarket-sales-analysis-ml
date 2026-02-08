@@ -9,6 +9,8 @@ import Categories from '@/pages/Categories'
 import Products from '@/pages/Products'
 import Inventory from '@/pages/Inventory'
 import Users from '@/pages/Users'
+import Billing from '@/pages/Billing'
+import Sales from '@/pages/Sales'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 function AppRoutes() {
@@ -69,6 +71,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Users />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/billing"
+        element={
+          <ProtectedRoute>
+            <Billing />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/sales"
+        element={
+          <ProtectedRoute>
+            <Sales />
           </ProtectedRoute>
         }
       />

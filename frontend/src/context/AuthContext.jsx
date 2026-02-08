@@ -23,16 +23,37 @@ export const AuthProvider = ({ children }) => {
     if (storedUser && token) {
       try {
         setUser(JSON.parse(storedUser))
-        // Verify token is still valid
-        api.get('/auth/profile/').catch(() => {
-          logout()
-        })
+        // Verify token is still valid and refresh user data
+        api.get('/auth/profile/')
+          .then(response => {
+            const updatedUser = response.data
+            localStorage.setItem('user', JSON.stringify(updatedUser))
+            setUser(updatedUser)
+          })
+          .catch(() => {
+            logout()
+          })
       } catch (error) {
         logout()
       }
     }
     setLoading(false)
   }, [])
+  
+  const refreshUser = async () => {
+    try {
+      const response = await api.get('/auth/profile/')
+      const updatedUser = response.data
+      localStorage.setItem('user', JSON.stringify(updatedUser))
+      setUser(updatedUser)
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Failed to refresh user data',
+      }
+    }
+  }
 
   const login = async (username, password) => {
     try {
@@ -80,7 +101,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, refreshUser }}>
       {children}
     </AuthContext.Provider>
   )
