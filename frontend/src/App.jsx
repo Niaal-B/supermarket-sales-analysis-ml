@@ -11,6 +11,9 @@ import Inventory from '@/pages/Inventory'
 import Users from '@/pages/Users'
 import Billing from '@/pages/Billing'
 import Sales from '@/pages/Sales'
+import RequestTransfer from '@/pages/RequestTransfer'
+import ManageTransfers from '@/pages/ManageTransfers'
+import TransferHistory from '@/pages/TransferHistory'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 function AppRoutes() {
@@ -87,6 +90,30 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Sales />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/transfers/request"
+        element={
+          <ProtectedRoute>
+            <RequestTransfer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/transfers/manage"
+        element={
+          <ProtectedRoute>
+            <ManageTransfers />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/transfers/history"
+        element={
+          <ProtectedRoute>
+            <TransferHistory />
           </ProtectedRoute>
         }
       />

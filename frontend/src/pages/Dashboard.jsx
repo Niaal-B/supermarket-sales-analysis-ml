@@ -236,6 +236,55 @@ export default function Dashboard() {
               <Button variant="outline" className="w-full">View Sales</Button>
             </CardContent>
           </Card>
+
+          {(user?.role === 'sales_manager' || user?.role === 'admin') && (
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/transfers/request')}>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Request Transfer</span>
+                  <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                </CardTitle>
+                <CardDescription>Request stock transfer between shops</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="w-full">Request Transfer</Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {user?.role === 'admin' && (
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/transfers/manage')}>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Manage Transfers</span>
+                  <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </CardTitle>
+                <CardDescription>Approve and manage transfer requests</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="w-full">Manage Transfers</Button>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/transfers/history')}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Transfer History</span>
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </CardTitle>
+              <CardDescription>View all transfer requests</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full">View History</Button>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Welcome Card */}
