@@ -175,6 +175,21 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/inventory')}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Inventory</span>
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </CardTitle>
+              <CardDescription>Manage stock levels</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full">View Inventory</Button>
+            </CardContent>
+          </Card>
+
           <Card className="cursor-not-allowed opacity-50">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">

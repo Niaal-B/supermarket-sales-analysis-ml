@@ -7,6 +7,7 @@ import Dashboard from '@/pages/Dashboard'
 import Shops from '@/pages/Shops'
 import Categories from '@/pages/Categories'
 import Products from '@/pages/Products'
+import Inventory from '@/pages/Inventory'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 function AppRoutes() {
@@ -51,6 +52,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Products />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/inventory"
+        element={
+          <ProtectedRoute>
+            <Inventory />
           </ProtectedRoute>
         }
       />
