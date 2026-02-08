@@ -190,6 +190,23 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
+          {user?.role === 'admin' && (
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/users')}>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Users</span>
+                  <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </CardTitle>
+                <CardDescription>Manage users and permissions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" className="w-full">View Users</Button>
+              </CardContent>
+            </Card>
+          )}
+
           <Card className="cursor-not-allowed opacity-50">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">

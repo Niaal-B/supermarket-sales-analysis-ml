@@ -35,7 +35,11 @@ class IsAdminOrSalesManagerOrReadOnly(permissions.BasePermission):
         
         # Sales Manager can only update stock for their shop
         if request.user.role == 'sales_manager':
-            return obj.shop == request.user.shop
+            # Check if user has a shop assigned
+            if not request.user.shop:
+                return False
+            # Compare shop IDs instead of objects
+            return obj.shop_id == request.user.shop_id
         
         return False
 

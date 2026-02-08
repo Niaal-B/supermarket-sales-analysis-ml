@@ -8,6 +8,7 @@ import Shops from '@/pages/Shops'
 import Categories from '@/pages/Categories'
 import Products from '@/pages/Products'
 import Inventory from '@/pages/Inventory'
+import Users from '@/pages/Users'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 function AppRoutes() {
@@ -60,6 +61,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Inventory />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/users"
+        element={
+          <ProtectedRoute>
+            <Users />
           </ProtectedRoute>
         }
       />

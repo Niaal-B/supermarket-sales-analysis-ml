@@ -62,7 +62,7 @@ class StockListCreateView(generics.ListCreateAPIView):
         """
         Create a new stock record with proper error handling
         """
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data, context={'request': request})
         
         if serializer.is_valid():
             # Check if stock record already exists for this shop-product combination
@@ -107,7 +107,7 @@ class StockRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         """
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial, context={'request': request})
         
         if serializer.is_valid():
             stock = serializer.save()

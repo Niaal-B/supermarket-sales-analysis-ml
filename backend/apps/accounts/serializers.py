@@ -4,10 +4,40 @@ from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    shop_name = serializers.SerializerMethodField()
+    
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'phone', 'shop', 'is_active', 'created_at']
-        read_only_fields = ['id', 'created_at']
+        fields = ['id', 'username', 'email', 'role', 'phone', 'shop', 'shop_name', 'is_active', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'shop_name', 'created_at', 'updated_at']
+    
+    def get_shop_name(self, obj):
+        return obj.shop.name if obj.shop else None
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating user (admin only)
+    Allows updating role, shop, phone, is_active without password
+    """
+    shop_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'role', 'phone', 'shop', 'shop_name', 'is_active', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'username', 'email', 'shop_name', 'created_at', 'updated_at']
+    
+    def get_shop_name(self, obj):
+        return obj.shop.name if obj.shop else None
+    
+    def validate_role(self, value):
+        """
+        Validate role
+        """
+        valid_roles = ['admin', 'sales_manager', 'staff']
+        if value not in valid_roles:
+            raise serializers.ValidationError(f"Role must be one of: {', '.join(valid_roles)}")
+        return value
 
 
 class RegisterSerializer(serializers.ModelSerializer):

@@ -73,6 +73,20 @@ class StockSerializer(serializers.ModelSerializer):
                 'min_threshold': 'Minimum threshold cannot exceed maximum capacity.'
             })
         
+        # For sales managers, prevent changing shop
+        request = self.context.get('request')
+        if request and request.user.role == 'sales_manager' and self.instance:
+            # If updating, ensure shop doesn't change
+            if 'shop' in attrs and attrs['shop'].id != self.instance.shop_id:
+                raise serializers.ValidationError({
+                    'shop': 'You cannot change the shop for this stock record.'
+                })
+            # If updating, ensure shop matches user's shop
+            if self.instance.shop_id != request.user.shop_id:
+                raise serializers.ValidationError({
+                    'shop': 'You can only update stock for your assigned shop.'
+                })
+        
         return attrs
 
 
