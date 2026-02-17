@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { useAlerts } from '@/context/AlertContext'
 import { useNavigate } from 'react-router-dom'
 import api from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Bell } from 'lucide-react'
 
 export default function Dashboard() {
   const { user, logout } = useAuth()
+  const { unreadCount } = useAlerts()
   const navigate = useNavigate()
   const [shopCount, setShopCount] = useState(0)
   const [categoryCount, setCategoryCount] = useState(0)
@@ -54,6 +57,21 @@ export default function Dashboard() {
               <h1 className="text-2xl font-bold text-gray-800">Supermarket Sales</h1>
             </div>
             <div className="flex items-center space-x-4">
+              {unreadCount > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/alerts')}
+                  className="relative"
+                >
+                  <Bell className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                  <span className="ml-2 hidden sm:inline">Alerts</span>
+                </Button>
+              )}
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-700">{user?.username}</p>
                 <p className="text-xs text-gray-500 capitalize">{user?.role?.replace('_', ' ')}</p>
@@ -283,6 +301,21 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <Button variant="outline" className="w-full">View History</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/alerts')}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Alerts</span>
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+              </CardTitle>
+              <CardDescription>View system alerts and notifications</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full">View Alerts</Button>
             </CardContent>
           </Card>
         </div>

@@ -111,6 +111,11 @@ class StockRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         
         if serializer.is_valid():
             stock = serializer.save()
+            
+            # Check and create alerts for low stock
+            from apps.analytics.alerts import create_low_stock_alert
+            create_low_stock_alert(stock)
+            
             return Response(StockSerializer(stock).data)
         
         return Response(

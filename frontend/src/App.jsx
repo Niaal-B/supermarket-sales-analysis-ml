@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/context/AuthContext'
+import { AlertProvider } from '@/context/AlertContext'
 import { Toaster } from '@/components/ui/sonner'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
@@ -14,6 +15,7 @@ import Sales from '@/pages/Sales'
 import RequestTransfer from '@/pages/RequestTransfer'
 import ManageTransfers from '@/pages/ManageTransfers'
 import TransferHistory from '@/pages/TransferHistory'
+import Alerts from '@/pages/Alerts'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 function AppRoutes() {
@@ -117,6 +119,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/alerts"
+        element={
+          <ProtectedRoute>
+            <Alerts />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )
@@ -125,10 +135,12 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
-      <Toaster />
+      <AlertProvider>
+        <Router>
+          <AppRoutes />
+        </Router>
+        <Toaster />
+      </AlertProvider>
     </AuthProvider>
   )
 }

@@ -250,6 +250,10 @@ class TransferCompleteView(generics.GenericAPIView):
                     from_stock.quantity -= transfer.quantity
                     from_stock.save()
                     
+                    # Check and create alerts for source shop
+                    from apps.analytics.alerts import create_low_stock_alert
+                    create_low_stock_alert(from_stock)
+                    
                     # Get or create destination stock
                     to_stock, created = Stock.objects.get_or_create(
                         shop=transfer.to_shop,
@@ -260,6 +264,8 @@ class TransferCompleteView(generics.GenericAPIView):
                     # Add stock to destination shop
                     to_stock.quantity += transfer.quantity
                     to_stock.save()
+                    
+                    # Note: No alert needed for destination shop (stock increased)
                     
                     # Update transfer status
                     transfer.status = 'completed'

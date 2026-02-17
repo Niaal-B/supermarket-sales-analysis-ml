@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { useAlerts } from '@/context/AlertContext'
 import { toast } from 'sonner'
 import api from '@/lib/api'
 import { formatError } from '@/utils/errorFormatter'
@@ -26,6 +27,7 @@ import { Plus, Minus, Trash2, ShoppingCart, Receipt } from 'lucide-react'
 
 export default function Billing() {
   const { user, refreshUser } = useAuth()
+  const { checkForNewAlerts } = useAlerts()
   const [products, setProducts] = useState([])
   const [shops, setShops] = useState([])
   const [cart, setCart] = useState([])
@@ -193,6 +195,11 @@ export default function Billing() {
       
       // Clear cart and reset form
       clearCart()
+      
+      // Check for new alerts after sale (small delay to ensure backend processed)
+      setTimeout(() => {
+        checkForNewAlerts(true)
+      }, 1000)
       
       // Optionally redirect to sale details or show receipt
       console.log('Sale created:', response.data)

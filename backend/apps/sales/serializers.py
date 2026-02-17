@@ -179,10 +179,14 @@ class SaleCreateSerializer(serializers.ModelSerializer):
                     **item_data
                 )
             
-            # Update stock quantities
+            # Update stock quantities and check for alerts
             for stock, quantity in stock_updates:
                 stock.quantity -= quantity
                 stock.save()
+                
+                # Check and create alerts for low stock
+                from apps.analytics.alerts import create_low_stock_alert
+                create_low_stock_alert(stock)
             
             # Calculate totals
             sale.calculate_totals()

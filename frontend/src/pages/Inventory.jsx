@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { useAlerts } from '@/context/AlertContext'
 import { toast } from 'sonner'
 import api from '@/lib/api'
 import { formatError } from '@/utils/errorFormatter'
@@ -34,6 +35,7 @@ import { Plus, Pencil, Trash2, Warehouse, AlertTriangle } from 'lucide-react'
 
 export default function Inventory() {
   const { user } = useAuth()
+  const { checkForNewAlerts } = useAlerts()
   const [stocks, setStocks] = useState([])
   const [shops, setShops] = useState([])
   const [products, setProducts] = useState([])
@@ -184,6 +186,11 @@ export default function Inventory() {
       
       setIsDialogOpen(false)
       fetchStocks()
+      
+      // Check for new alerts after stock update
+      setTimeout(() => {
+        checkForNewAlerts(true)
+      }, 1000)
     } catch (error) {
       toast.error(formatError(error.response?.data || 'Operation failed'))
     } finally {

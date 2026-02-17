@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { useAlerts } from '@/context/AlertContext'
 import { toast } from 'sonner'
 import api from '@/lib/api'
 import { formatError } from '@/utils/errorFormatter'
@@ -42,6 +43,7 @@ const STATUS_COLORS = {
 
 export default function ManageTransfers() {
   const { user } = useAuth()
+  const { checkForNewAlerts } = useAlerts()
   const [transfers, setTransfers] = useState([])
   const [shops, setShops] = useState([])
   const [loading, setLoading] = useState(true)
@@ -168,6 +170,14 @@ export default function ManageTransfers() {
       }
       
       toast.success(actionMessages[actionType])
+      
+      // Check for new alerts after transfer completion (stock was updated)
+      if (actionType === 'complete') {
+        setTimeout(() => {
+          checkForNewAlerts(true)
+        }, 1000)
+      }
+      
       setIsActionDialogOpen(false)
       setSelectedTransfer(null)
       setActionType(null)
