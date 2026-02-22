@@ -398,7 +398,7 @@ export default function ManageTransfers() {
         </Card>
 
         {/* Transfer Details Dialog */}
-      <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+        <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Transfer Details</DialogTitle>
