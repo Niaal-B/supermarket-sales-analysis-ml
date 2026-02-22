@@ -24,6 +24,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Plus, Pencil, Trash2, Building2 } from 'lucide-react'
+import AppLayout from '@/components/AppLayout'
 
 export default function Shops() {
   const { user } = useAuth()
@@ -145,37 +146,22 @@ export default function Shops() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-white" />
-              </div>
-              <h1 className="text-2xl font-bold text-gray-800">Shops Management</h1>
-            </div>
-            {isAdmin && (
-              <Button onClick={handleCreate}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Shop
-              </Button>
-            )}
+    <AppLayout>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="heading-2 text-gray-900">Shops Management</h1>
+            <p className="body-small text-muted-foreground mt-1">Manage your supermarket shops and branches</p>
           </div>
+          {isAdmin && (
+            <Button onClick={handleCreate} className="bg-gradient-primary hover:opacity-90">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Shop
+            </Button>
+          )}
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>All Shops</CardTitle>
-            <CardDescription>
-              Manage your supermarket shops and branches
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <Card className="border-0 shadow-soft">
+          <CardContent className="pt-6">
             {loading ? (
               <div className="text-center py-8">
                 <p className="text-gray-500">Loading shops...</p>
