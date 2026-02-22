@@ -414,88 +414,88 @@ export default function Alerts() {
         {/* Alert Details Dialog */}
         <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
           <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Alert Details</DialogTitle>
-            <DialogDescription>
-              Complete information about this alert
-            </DialogDescription>
-          </DialogHeader>
-          {selectedAlert && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm text-muted-foreground">Alert ID</label>
-                  <p className="font-semibold">#{selectedAlert.id}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">Type</label>
-                  <div className="flex items-center gap-2">
-                    {getAlertTypeIcon(selectedAlert.alert_type)}
+            <DialogHeader>
+              <DialogTitle>Alert Details</DialogTitle>
+              <DialogDescription>
+                Complete information about this alert
+              </DialogDescription>
+            </DialogHeader>
+            {selectedAlert && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-muted-foreground">Alert ID</label>
+                    <p className="font-semibold">#{selectedAlert.id}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground">Type</label>
+                    <div className="flex items-center gap-2">
+                      {getAlertTypeIcon(selectedAlert.alert_type)}
+                      <p className="font-semibold">
+                        {ALERT_TYPE_LABELS[selectedAlert.alert_type] || selectedAlert.alert_type}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground">Severity</label>
+                    <div>{getSeverityBadge(selectedAlert.severity)}</div>
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground">Status</label>
                     <p className="font-semibold">
-                      {ALERT_TYPE_LABELS[selectedAlert.alert_type] || selectedAlert.alert_type}
+                      {selectedAlert.is_read ? 'Read' : 'Unread'}
                     </p>
                   </div>
-                </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">Severity</label>
-                  <div>{getSeverityBadge(selectedAlert.severity)}</div>
-                </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">Status</label>
-                  <p className="font-semibold">
-                    {selectedAlert.is_read ? 'Read' : 'Unread'}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">Shop</label>
-                  <p className="font-semibold">{selectedAlert.shop_name}</p>
-                </div>
-                {selectedAlert.product_name && (
                   <div>
-                    <label className="text-sm text-muted-foreground">Product</label>
-                    <p className="font-semibold">{selectedAlert.product_name}</p>
+                    <label className="text-sm text-muted-foreground">Shop</label>
+                    <p className="font-semibold">{selectedAlert.shop_name}</p>
                   </div>
-                )}
-                <div>
-                  <label className="text-sm text-muted-foreground">Created At</label>
-                  <p className="font-semibold">{formatDate(selectedAlert.created_at)}</p>
+                  {selectedAlert.product_name && (
+                    <div>
+                      <label className="text-sm text-muted-foreground">Product</label>
+                      <p className="font-semibold">{selectedAlert.product_name}</p>
+                    </div>
+                  )}
+                  <div>
+                    <label className="text-sm text-muted-foreground">Created At</label>
+                    <p className="font-semibold">{formatDate(selectedAlert.created_at)}</p>
+                  </div>
+                  {selectedAlert.read_at && (
+                    <div>
+                      <label className="text-sm text-muted-foreground">Read At</label>
+                      <p className="font-semibold">{formatDate(selectedAlert.read_at)}</p>
+                    </div>
+                  )}
+                  {selectedAlert.read_by_username && (
+                    <div>
+                      <label className="text-sm text-muted-foreground">Read By</label>
+                      <p className="font-semibold">{selectedAlert.read_by_username}</p>
+                    </div>
+                  )}
                 </div>
-                {selectedAlert.read_at && (
-                  <div>
-                    <label className="text-sm text-muted-foreground">Read At</label>
-                    <p className="font-semibold">{formatDate(selectedAlert.read_at)}</p>
-                  </div>
-                )}
-                {selectedAlert.read_by_username && (
-                  <div>
-                    <label className="text-sm text-muted-foreground">Read By</label>
-                    <p className="font-semibold">{selectedAlert.read_by_username}</p>
-                  </div>
-                )}
+                <div>
+                  <label className="text-sm text-muted-foreground">Message</label>
+                  <p className="mt-1 p-3 bg-muted rounded-md">{selectedAlert.message}</p>
+                </div>
               </div>
-              <div>
-                <label className="text-sm text-muted-foreground">Message</label>
-                <p className="mt-1 p-3 bg-muted rounded-md">{selectedAlert.message}</p>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            {selectedAlert && !selectedAlert.is_read && (
-              <Button
-                onClick={() => {
-                  markAsRead(selectedAlert.id)
-                  setIsDetailDialogOpen(false)
-                }}
-                disabled={markingRead}
-              >
-                <CheckCircle2 className="h-4 w-4 mr-2" />
-                Mark as Read
-              </Button>
             )}
-            <Button variant="outline" onClick={() => setIsDetailDialogOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
+            <DialogFooter>
+              {selectedAlert && !selectedAlert.is_read && (
+                <Button
+                  onClick={() => {
+                    markAsRead(selectedAlert.id)
+                    setIsDetailDialogOpen(false)
+                  }}
+                  disabled={markingRead}
+                >
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  Mark as Read
+                </Button>
+              )}
+              <Button variant="outline" onClick={() => setIsDetailDialogOpen(false)}>
+                Close
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
