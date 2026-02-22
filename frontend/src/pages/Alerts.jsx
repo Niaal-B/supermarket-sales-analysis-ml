@@ -410,9 +410,8 @@ export default function Alerts() {
             )}
           </CardContent>
         </Card>
-      </main>
 
-      {/* Alert Details Dialog */}
+        {/* Alert Details Dialog */}
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
