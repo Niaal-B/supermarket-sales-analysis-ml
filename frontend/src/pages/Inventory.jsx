@@ -512,7 +512,8 @@ export default function Inventory() {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+        </Dialog>
+      </div>
     </AppLayout>
   )
 }

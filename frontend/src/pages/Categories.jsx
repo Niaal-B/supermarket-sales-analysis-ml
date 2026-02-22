@@ -297,7 +297,8 @@ export default function Categories() {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+        </Dialog>
+      </div>
     </AppLayout>
   )
 }
