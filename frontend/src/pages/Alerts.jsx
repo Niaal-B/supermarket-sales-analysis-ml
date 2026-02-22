@@ -413,7 +413,7 @@ export default function Alerts() {
 
         {/* Alert Details Dialog */}
         <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-        <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Alert Details</DialogTitle>
             <DialogDescription>
@@ -496,8 +496,8 @@ export default function Alerts() {
               Close
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   )
