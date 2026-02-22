@@ -235,9 +235,8 @@ export default function Shops() {
             )}
           </CardContent>
         </Card>
-      </main>
 
-      {/* Create/Edit Dialog */}
+        {/* Create/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
@@ -357,7 +356,7 @@ export default function Shops() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </AppLayout>
   )
 }
 

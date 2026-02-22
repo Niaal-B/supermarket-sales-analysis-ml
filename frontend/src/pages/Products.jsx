@@ -319,9 +319,8 @@ export default function Products() {
             )}
           </CardContent>
         </Card>
-      </main>
 
-      {/* Create/Edit Dialog */}
+        {/* Create/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -468,7 +467,7 @@ export default function Products() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </AppLayout>
   )
 }
 

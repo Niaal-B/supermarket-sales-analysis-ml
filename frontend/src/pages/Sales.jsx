@@ -276,9 +276,8 @@ export default function Sales() {
             )}
           </CardContent>
         </Card>
-      </main>
 
-      {/* Sale Details Dialog */}
+        {/* Sale Details Dialog */}
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
         <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>

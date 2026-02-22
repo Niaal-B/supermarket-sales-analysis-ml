@@ -210,9 +210,8 @@ export default function Categories() {
             )}
           </CardContent>
         </Card>
-      </main>
 
-      {/* Create/Edit Dialog */}
+        {/* Create/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>

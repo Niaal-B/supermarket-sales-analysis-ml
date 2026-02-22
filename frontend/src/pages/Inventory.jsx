@@ -367,9 +367,8 @@ export default function Inventory() {
             )}
           </CardContent>
         </Card>
-      </main>
 
-      {/* Create/Edit Dialog */}
+        {/* Create/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
