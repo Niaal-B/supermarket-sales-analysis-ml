@@ -315,82 +315,82 @@ export default function TransferHistory() {
 
         {/* Transfer Details Dialog */}
         <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Transfer Details</DialogTitle>
-            <DialogDescription>
-              Complete information about this transfer
-            </DialogDescription>
-          </DialogHeader>
-          {selectedTransfer && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm text-muted-foreground">Transfer ID</label>
-                  <p className="font-semibold">#{selectedTransfer.id}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">Status</label>
-                  <div>{getStatusBadge(selectedTransfer.status)}</div>
-                </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">Product</label>
-                  <p className="font-semibold">{selectedTransfer.product_name}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">Quantity</label>
-                  <p className="font-semibold">{selectedTransfer.quantity}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">From Shop</label>
-                  <p className="font-semibold">{selectedTransfer.from_shop_name}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">To Shop</label>
-                  <p className="font-semibold">{selectedTransfer.to_shop_name}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">Requested By</label>
-                  <p className="font-semibold">{selectedTransfer.requested_by_username}</p>
-                </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">Requested At</label>
-                  <p className="font-semibold">{formatDate(selectedTransfer.requested_at)}</p>
-                </div>
-                {selectedTransfer.approved_by_username && (
-                  <>
-                    <div>
-                      <label className="text-sm text-muted-foreground">Approved By</label>
-                      <p className="font-semibold">{selectedTransfer.approved_by_username}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm text-muted-foreground">Approved At</label>
-                      <p className="font-semibold">{formatDate(selectedTransfer.approved_at)}</p>
-                    </div>
-                  </>
-                )}
-                {selectedTransfer.completed_at && (
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Transfer Details</DialogTitle>
+              <DialogDescription>
+                Complete information about this transfer
+              </DialogDescription>
+            </DialogHeader>
+            {selectedTransfer && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm text-muted-foreground">Completed At</label>
-                    <p className="font-semibold">{formatDate(selectedTransfer.completed_at)}</p>
+                    <label className="text-sm text-muted-foreground">Transfer ID</label>
+                    <p className="font-semibold">#{selectedTransfer.id}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground">Status</label>
+                    <div>{getStatusBadge(selectedTransfer.status)}</div>
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground">Product</label>
+                    <p className="font-semibold">{selectedTransfer.product_name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground">Quantity</label>
+                    <p className="font-semibold">{selectedTransfer.quantity}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground">From Shop</label>
+                    <p className="font-semibold">{selectedTransfer.from_shop_name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground">To Shop</label>
+                    <p className="font-semibold">{selectedTransfer.to_shop_name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground">Requested By</label>
+                    <p className="font-semibold">{selectedTransfer.requested_by_username}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground">Requested At</label>
+                    <p className="font-semibold">{formatDate(selectedTransfer.requested_at)}</p>
+                  </div>
+                  {selectedTransfer.approved_by_username && (
+                    <>
+                      <div>
+                        <label className="text-sm text-muted-foreground">Approved By</label>
+                        <p className="font-semibold">{selectedTransfer.approved_by_username}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm text-muted-foreground">Approved At</label>
+                        <p className="font-semibold">{formatDate(selectedTransfer.approved_at)}</p>
+                      </div>
+                    </>
+                  )}
+                  {selectedTransfer.completed_at && (
+                    <div>
+                      <label className="text-sm text-muted-foreground">Completed At</label>
+                      <p className="font-semibold">{formatDate(selectedTransfer.completed_at)}</p>
+                    </div>
+                  )}
+                </div>
+                {selectedTransfer.notes && (
+                  <div>
+                    <label className="text-sm text-muted-foreground">Notes</label>
+                    <p className="mt-1 p-3 bg-muted rounded-md">{selectedTransfer.notes}</p>
                   </div>
                 )}
               </div>
-              {selectedTransfer.notes && (
-                <div>
-                  <label className="text-sm text-muted-foreground">Notes</label>
-                  <p className="mt-1 p-3 bg-muted rounded-md">{selectedTransfer.notes}</p>
-                </div>
-              )}
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDetailDialogOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            )}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsDetailDialogOpen(false)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   )
