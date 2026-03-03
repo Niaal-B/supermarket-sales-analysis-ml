@@ -11,7 +11,7 @@ from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
 from .models import Sale, SaleItem
-from .permissions import IsStaffOrSalesManagerOrAdmin
+from .permissions import IsStaffOrSalesManagerOrAdmin, IsSalesManagerOrAdmin
 
 
 class SalesReportView(APIView):
@@ -19,7 +19,7 @@ class SalesReportView(APIView):
     Generate sales reports for different time periods
     GET /api/sales/reports/?period=daily|weekly|monthly|yearly&start_date=YYYY-MM-DD&end_date=YYYY-MM-DD
     """
-    permission_classes = [IsAuthenticated, IsStaffOrSalesManagerOrAdmin]
+    permission_classes = [IsAuthenticated, IsSalesManagerOrAdmin]
     
     def get(self, request):
         period = request.query_params.get('period', 'daily')
@@ -127,7 +127,7 @@ class SalesByPaymentMethodView(APIView):
     Get sales breakdown by payment method
     GET /api/sales/reports/payment-methods/?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD
     """
-    permission_classes = [IsAuthenticated, IsStaffOrSalesManagerOrAdmin]
+    permission_classes = [IsAuthenticated, IsSalesManagerOrAdmin]
     
     def get(self, request):
         start_date = request.query_params.get('start_date', None)
@@ -176,7 +176,7 @@ class TopProductsView(APIView):
     Get top selling products
     GET /api/sales/reports/top-products/?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD&limit=10
     """
-    permission_classes = [IsAuthenticated, IsStaffOrSalesManagerOrAdmin]
+    permission_classes = [IsAuthenticated, IsSalesManagerOrAdmin]
     
     def get(self, request):
         start_date = request.query_params.get('start_date', None)

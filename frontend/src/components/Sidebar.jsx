@@ -1,11 +1,11 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useAlerts } from '@/context/AlertContext'
-import { 
-  LayoutDashboard, 
-  Building2, 
-  Tag, 
-  Package, 
+import {
+  LayoutDashboard,
+  Building2,
+  Tag,
+  Package,
   Warehouse,
   ShoppingCart,
   Receipt,
@@ -77,7 +77,7 @@ const menuItems = [
     title: 'Reports',
     icon: FileText,
     path: '/reports',
-    roles: ['admin', 'sales_manager', 'staff']
+    roles: ['admin', 'sales_manager']
   },
   {
     title: 'Transfers',
@@ -126,22 +126,22 @@ export default function Sidebar({ isOpen, onClose }) {
   const { user } = useAuth()
   const { unreadCount } = useAlerts()
   const location = useLocation()
-  
+
   const filteredMenuItems = menuItems.filter(item => {
     if (item.type === 'section') return true
     return item.roles?.includes(user?.role)
   })
-  
+
   return (
     <>
       {/* Mobile Overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300"
           onClick={onClose}
         />
       )}
-      
+
       {/* Sidebar */}
       <aside className={cn(
         "fixed left-0 top-0 h-full bg-white border-r border-gray-200 z-50 transition-transform duration-300 shadow-large",
@@ -167,7 +167,7 @@ export default function Sidebar({ isOpen, onClose }) {
               <X className="h-5 w-5" />
             </Button>
           </div>
-          
+
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto py-4 px-3">
             {filteredMenuItems.map((item, index) => {
@@ -180,12 +180,12 @@ export default function Sidebar({ isOpen, onClose }) {
                   </div>
                 )
               }
-              
-              const isActive = location.pathname === item.path || 
+
+              const isActive = location.pathname === item.path ||
                 (item.path !== '/dashboard' && location.pathname.startsWith(item.path))
               const Icon = item.icon
               const showBadge = item.badge && unreadCount > 0
-              
+
               return (
                 <NavLink
                   key={index}
@@ -217,7 +217,7 @@ export default function Sidebar({ isOpen, onClose }) {
               )
             })}
           </nav>
-          
+
           {/* User Info Footer */}
           <div className="border-t border-gray-200 p-4 bg-gray-50/50">
             <div className="flex items-center space-x-3">

@@ -35,3 +35,17 @@ class IsStaffOrSalesManagerOrAdmin(permissions.BasePermission):
         # Only admin can modify/delete sales
         return request.user.role == 'admin'
 
+
+class IsSalesManagerOrAdmin(permissions.BasePermission):
+    """
+    Custom permission:
+    - Admin: Full access
+    - Sales Manager: Access to data
+    - Staff: No access
+    """
+    def has_permission(self, request, view):
+        return (
+            request.user and
+            request.user.is_authenticated and
+            request.user.role in ['admin', 'sales_manager']
+        )

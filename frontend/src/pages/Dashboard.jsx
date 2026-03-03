@@ -35,6 +35,7 @@ export default function Dashboard() {
     total_sales: 0,
     average_sale: 0,
   })
+  const isStaff = user?.role === 'staff'
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -44,21 +45,21 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
-      
+
       // Set date range for last 30 days
       const endDate = new Date()
       const startDate = new Date()
       startDate.setDate(startDate.getDate() - 30)
-      
+
       const startDateStr = startDate.toISOString().split('T')[0]
       const endDateStr = endDate.toISOString().split('T')[0]
-      
+
       const params = new URLSearchParams({
         period: 'daily',
         start_date: startDateStr,
         end_date: endDateStr,
       })
-      
+
       // If user is not admin, filter by their shop
       if (user?.role !== 'admin' && user?.shop) {
         const shopId = typeof user.shop === 'object' ? user.shop.id : user.shop
@@ -67,20 +68,31 @@ export default function Dashboard() {
         }
       }
 
-      // Fetch all data in parallel
-      const [shopsRes, categoriesRes, productsRes, salesRes, paymentRes, topProductsRes] = await Promise.all([
+      // Fetch data in parallel
+      const apiCalls = [
         api.get('/shops/').catch(() => ({ data: [] })),
         api.get('/products/categories/').catch(() => ({ data: [] })),
         api.get('/products/').catch(() => ({ data: [] })),
-        api.get(`/sales/reports/?${params.toString()}`).catch(() => ({ data: null })),
-        api.get(`/sales/reports/payment-methods/?${params.toString()}`).catch(() => ({ data: { data: [] } })),
-        api.get(`/sales/reports/top-products/?${params.toString()}&limit=5`).catch(() => ({ data: { data: [] } })),
-      ])
+      ]
+
+      // Only fetch sales reports if not staff
+      if (!isStaff) {
+        apiCalls.push(api.get(`/sales/reports/?${params.toString()}`).catch(() => ({ data: null })))
+        apiCalls.push(api.get(`/sales/reports/payment-methods/?${params.toString()}`).catch(() => ({ data: { data: [] } })))
+        apiCalls.push(api.get(`/sales/reports/top-products/?${params.toString()}&limit=5`).catch(() => ({ data: { data: [] } })))
+      }
+
+      const results = await Promise.all(apiCalls)
+
+      const [shopsRes, categoriesRes, productsRes] = results
+      const salesRes = isStaff ? { data: null } : results[3]
+      const paymentRes = isStaff ? { data: { data: [] } } : results[4]
+      const topProductsRes = isStaff ? { data: { data: [] } } : results[5]
 
       setShopCount(shopsRes.data.length)
       setCategoryCount(categoriesRes.data.length)
       setProductCount(productsRes.data.length)
-      
+
       if (salesRes.data) {
         setSalesData(salesRes.data.data || [])
         setSalesSummary({
@@ -89,7 +101,7 @@ export default function Dashboard() {
           average_sale: salesRes.data.summary?.average_sale || 0,
         })
       }
-      
+
       setPaymentData(paymentRes.data.data || [])
       setTopProducts(topProductsRes.data.data || [])
     } catch (error) {
@@ -167,68 +179,72 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="card-hover border-0 shadow-soft bg-gradient-to-br from-white to-purple-50/50 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="label-text text-gray-700">Total Revenue</CardTitle>
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-glow">
-                <DollarSign className="h-5 w-5 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900 mb-1">
-                {loading ? '...' : formatCurrency(salesSummary.total_revenue)}
-              </div>
-              <p className="caption">Last 30 days</p>
-            </CardContent>
-          </Card>
+          {!isStaff && (
+            <Card className="card-hover border-0 shadow-soft bg-gradient-to-br from-white to-purple-50/50 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="label-text text-gray-700">Total Revenue</CardTitle>
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-glow">
+                  <DollarSign className="h-5 w-5 text-white" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-gray-900 mb-1">
+                  {loading ? '...' : formatCurrency(salesSummary.total_revenue)}
+                </div>
+                <p className="caption">Last 30 days</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
-        {/* Sales Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="border-0 shadow-soft">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
-              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{loading ? '...' : salesSummary.total_sales}</div>
-              <p className="text-xs text-muted-foreground mt-1">Transactions (30 days)</p>
-            </CardContent>
-          </Card>
+        {/* Sales Stats Cards - Hidden for Staff */}
+        {!isStaff && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card className="border-0 shadow-soft">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
+                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{loading ? '...' : salesSummary.total_sales}</div>
+                <p className="text-xs text-muted-foreground mt-1">Transactions (30 days)</p>
+              </CardContent>
+            </Card>
 
-          <Card className="border-0 shadow-soft">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average Sale</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {loading ? '...' : formatCurrency(salesSummary.average_sale)}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">Per transaction</p>
-            </CardContent>
-          </Card>
+            <Card className="border-0 shadow-soft">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Average Sale</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {loading ? '...' : formatCurrency(salesSummary.average_sale)}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Per transaction</p>
+              </CardContent>
+            </Card>
 
-          <Card className="border-0 shadow-soft">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Revenue Trend</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {salesData.length > 1 && !loading
-                  ? salesData[salesData.length - 1].total_revenue > salesData[0].total_revenue
-                    ? '↑'
-                    : '↓'
-                  : '—'}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">vs previous period</p>
-            </CardContent>
-          </Card>
-        </div>
+            <Card className="border-0 shadow-soft">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Revenue Trend</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {salesData.length > 1 && !loading
+                    ? salesData[salesData.length - 1].total_revenue > salesData[0].total_revenue
+                      ? '↑'
+                      : '↓'
+                    : '—'}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">vs previous period</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
-        {/* Charts */}
-        {!loading && (
+        {/* Charts - Hidden for Staff */}
+        {!isStaff && !loading && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Revenue Chart */}
             {salesData.length > 0 && (
@@ -302,8 +318,8 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Top Products */}
-        {!loading && topProducts.length > 0 && (
+        {/* Top Products - Hidden for Staff */}
+        {!isStaff && !loading && topProducts.length > 0 && (
           <Card className="mb-8 border-0 shadow-soft">
             <CardHeader>
               <CardTitle className="heading-4">Top Selling Products (Last 30 Days)</CardTitle>
@@ -339,7 +355,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <p className="body-medium text-gray-700">
-              This is your dashboard. Use the sidebar to navigate to different sections. 
+              This is your dashboard. Use the sidebar to navigate to different sections.
               Here you can view key metrics and manage shops, products, sales, and inventory.
             </p>
           </CardContent>
