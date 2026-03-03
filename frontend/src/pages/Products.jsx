@@ -54,6 +54,8 @@ export default function Products() {
   const [filterActive, setFilterActive] = useState('all')
 
   const isAdmin = user?.role === 'admin'
+  const isSalesManager = user?.role === 'sales_manager'
+  const canManage = isAdmin || isSalesManager
 
   // Fetch products and categories
   useEffect(() => {
@@ -75,18 +77,18 @@ export default function Products() {
       setLoading(true)
       let url = '/products/'
       const params = new URLSearchParams()
-      
+
       if (filterCategory !== 'all') {
         params.append('category_id', filterCategory)
       }
       if (filterActive !== 'all') {
         params.append('is_active', filterActive)
       }
-      
+
       if (params.toString()) {
         url += '?' + params.toString()
       }
-      
+
       const response = await api.get(url)
       setProducts(response.data)
     } catch (error) {
@@ -163,7 +165,7 @@ export default function Products() {
         await api.post('/products/', submitData)
         toast.success('Product created successfully!')
       }
-      
+
       setIsDialogOpen(false)
       fetchProducts()
     } catch (error) {
@@ -205,7 +207,7 @@ export default function Products() {
             <h1 className="heading-2 text-gray-900">Products Management</h1>
             <p className="body-small text-muted-foreground mt-1">Manage your product catalog</p>
           </div>
-          {isAdmin && (
+          {canManage && (
             <Button onClick={handleCreate} className="bg-gradient-primary hover:opacity-90">
               <Plus className="w-4 h-4 mr-2" />
               Add Product
@@ -255,7 +257,7 @@ export default function Products() {
               <div className="text-center py-8">
                 <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500 mb-4">No products found</p>
-                {isAdmin && (
+                {canManage && (
                   <Button onClick={handleCreate} variant="outline">
                     <Plus className="w-4 h-4 mr-2" />
                     Create First Product
@@ -271,7 +273,7 @@ export default function Products() {
                     <TableHead>Price</TableHead>
                     <TableHead>Barcode</TableHead>
                     <TableHead>Status</TableHead>
-                    {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                    {canManage && <TableHead className="text-right">Actions</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -283,16 +285,15 @@ export default function Products() {
                       <TableCell>{product.barcode || '-'}</TableCell>
                       <TableCell>
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            product.is_active
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${product.is_active
                               ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'
-                          }`}
+                            }`}
                         >
                           {product.is_active ? 'Active' : 'Inactive'}
                         </span>
                       </TableCell>
-                      {isAdmin && (
+                      {canManage && (
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             <Button
@@ -322,151 +323,151 @@ export default function Products() {
         </Card>
 
         {/* Create/Edit Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedProduct ? 'Edit Product' : 'Create New Product'}
-            </DialogTitle>
-            <DialogDescription>
-              {selectedProduct
-                ? 'Update product information below.'
-                : 'Fill in the details to create a new product.'}
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Product Name *</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="e.g., Milk, Bread, Rice"
-                  required
-                />
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {selectedProduct ? 'Edit Product' : 'Create New Product'}
+              </DialogTitle>
+              <DialogDescription>
+                {selectedProduct
+                  ? 'Update product information below.'
+                  : 'Fill in the details to create a new product.'}
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Product Name *</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="e.g., Milk, Bread, Rice"
+                    required
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={formData.category || 'none'}
+                    onValueChange={handleCategoryChange}
+                  >
+                    <SelectTrigger id="category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No Category</SelectItem>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id.toString()}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="unit_price">Unit Price (₹) *</Label>
+                  <Input
+                    id="unit_price"
+                    name="unit_price"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.unit_price}
+                    onChange={handleChange}
+                    placeholder="0.00"
+                    required
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="barcode">Barcode</Label>
+                  <Input
+                    id="barcode"
+                    name="barcode"
+                    value={formData.barcode}
+                    onChange={handleChange}
+                    placeholder="Optional barcode"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Description</Label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    placeholder="Optional product description"
+                    rows={3}
+                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="is_active"
+                    name="is_active"
+                    checked={formData.is_active}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <Label htmlFor="is_active" className="cursor-pointer">
+                    Active
+                  </Label>
+                </div>
               </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
-                <Select
-                  value={formData.category || 'none'}
-                  onValueChange={handleCategoryChange}
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                  disabled={formLoading}
                 >
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No Category</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id.toString()}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={formLoading}>
+                  {formLoading ? 'Saving...' : selectedProduct ? 'Update' : 'Create'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
 
-              <div className="grid gap-2">
-                <Label htmlFor="unit_price">Unit Price (₹) *</Label>
-                <Input
-                  id="unit_price"
-                  name="unit_price"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.unit_price}
-                  onChange={handleChange}
-                  placeholder="0.00"
-                  required
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="barcode">Barcode</Label>
-                <Input
-                  id="barcode"
-                  name="barcode"
-                  value={formData.barcode}
-                  onChange={handleChange}
-                  placeholder="Optional barcode"
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder="Optional product description"
-                  rows={3}
-                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="is_active"
-                  name="is_active"
-                  checked={formData.is_active}
-                  onChange={handleChange}
-                  className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                />
-                <Label htmlFor="is_active" className="cursor-pointer">
-                  Active
-                </Label>
-              </div>
-            </div>
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Product</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{selectedProduct?.name}"? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
             <DialogFooter>
               <Button
-                type="button"
                 variant="outline"
-                onClick={() => setIsDialogOpen(false)}
+                onClick={() => {
+                  setIsDeleteDialogOpen(false)
+                  setSelectedProduct(null)
+                }}
                 disabled={formLoading}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={formLoading}>
-                {formLoading ? 'Saving...' : selectedProduct ? 'Update' : 'Create'}
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={formLoading}
+              >
+                {formLoading ? 'Deleting...' : 'Delete'}
               </Button>
             </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Product</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete "{selectedProduct?.name}"? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsDeleteDialogOpen(false)
-                setSelectedProduct(null)
-              }}
-              disabled={formLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={formLoading}
-            >
-              {formLoading ? 'Deleting...' : 'Delete'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+          </DialogContent>
         </Dialog>
       </div>
     </AppLayout>
