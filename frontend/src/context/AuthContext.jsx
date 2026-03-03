@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
     // Check if user is logged in on mount
     const storedUser = localStorage.getItem('user')
     const token = localStorage.getItem('access_token')
-    
+
     if (storedUser && token) {
       try {
         setUser(JSON.parse(storedUser))
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     }
     setLoading(false)
   }, [])
-  
+
   const refreshUser = async () => {
     try {
       const response = await api.get('/auth/profile/')
@@ -59,13 +59,13 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/login/', { username, password })
       const { user, access, refresh } = response.data
-      
+
       localStorage.setItem('access_token', access)
       localStorage.setItem('refresh_token', refresh)
       localStorage.setItem('user', JSON.stringify(user))
       setUser(user)
-      
-      return { success: true }
+
+      return { success: true, user }
     } catch (error) {
       return {
         success: false,
@@ -78,12 +78,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/register/', userData)
       const { user, access, refresh } = response.data
-      
+
       localStorage.setItem('access_token', access)
       localStorage.setItem('refresh_token', refresh)
       localStorage.setItem('user', JSON.stringify(user))
       setUser(user)
-      
+
       return { success: true }
     } catch (error) {
       return {
