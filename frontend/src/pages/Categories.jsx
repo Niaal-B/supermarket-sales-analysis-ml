@@ -40,6 +40,8 @@ export default function Categories() {
   const [formLoading, setFormLoading] = useState(false)
 
   const isAdmin = user?.role === 'admin'
+  const isSalesManager = user?.role === 'sales_manager'
+  const canManage = isAdmin || isSalesManager
 
   // Fetch categories
   useEffect(() => {
@@ -102,7 +104,7 @@ export default function Categories() {
         await api.post('/products/categories/', formData)
         toast.success('Category created successfully!')
       }
-      
+
       setIsDialogOpen(false)
       fetchCategories()
     } catch (error) {
@@ -144,7 +146,7 @@ export default function Categories() {
             <h1 className="heading-2 text-gray-900">Categories Management</h1>
             <p className="body-small text-muted-foreground mt-1">Manage product categories (Dairy, Bakery, etc.)</p>
           </div>
-          {isAdmin && (
+          {canManage && (
             <Button onClick={handleCreate} className="bg-gradient-primary hover:opacity-90">
               <Plus className="w-4 h-4 mr-2" />
               Add Category
@@ -161,7 +163,7 @@ export default function Categories() {
               <div className="text-center py-8">
                 <Tag className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500 mb-4">No categories found</p>
-                {isAdmin && (
+                {canManage && (
                   <Button onClick={handleCreate} variant="outline">
                     <Plus className="w-4 h-4 mr-2" />
                     Create First Category
@@ -174,7 +176,7 @@ export default function Categories() {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Description</TableHead>
-                    {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                    {canManage && <TableHead className="text-right">Actions</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -182,7 +184,7 @@ export default function Categories() {
                     <TableRow key={category.id}>
                       <TableCell className="font-medium">{category.name}</TableCell>
                       <TableCell>{category.description || '-'}</TableCell>
-                      {isAdmin && (
+                      {canManage && (
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             <Button
@@ -212,91 +214,91 @@ export default function Categories() {
         </Card>
 
         {/* Create/Edit Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedCategory ? 'Edit Category' : 'Create New Category'}
-            </DialogTitle>
-            <DialogDescription>
-              {selectedCategory
-                ? 'Update category information below.'
-                : 'Fill in the details to create a new category.'}
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Category Name *</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="e.g., Dairy, Bakery, Beverages"
-                  required
-                />
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>
+                {selectedCategory ? 'Edit Category' : 'Create New Category'}
+              </DialogTitle>
+              <DialogDescription>
+                {selectedCategory
+                  ? 'Update category information below.'
+                  : 'Fill in the details to create a new category.'}
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Category Name *</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="e.g., Dairy, Bakery, Beverages"
+                    required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Description</Label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    placeholder="Optional description for this category"
+                    rows={3}
+                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder="Optional description for this category"
-                  rows={3}
-                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                />
-              </div>
-            </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                  disabled={formLoading}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={formLoading}>
+                  {formLoading ? 'Saving...' : selectedCategory ? 'Update' : 'Create'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Category</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{selectedCategory?.name}"? This action cannot be undone.
+                {selectedCategory && ' If this category has products, you will need to reassign them first.'}
+              </DialogDescription>
+            </DialogHeader>
             <DialogFooter>
               <Button
-                type="button"
                 variant="outline"
-                onClick={() => setIsDialogOpen(false)}
+                onClick={() => {
+                  setIsDeleteDialogOpen(false)
+                  setSelectedCategory(null)
+                }}
                 disabled={formLoading}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={formLoading}>
-                {formLoading ? 'Saving...' : selectedCategory ? 'Update' : 'Create'}
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={formLoading}
+              >
+                {formLoading ? 'Deleting...' : 'Delete'}
               </Button>
             </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Category</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete "{selectedCategory?.name}"? This action cannot be undone.
-              {selectedCategory && ' If this category has products, you will need to reassign them first.'}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsDeleteDialogOpen(false)
-                setSelectedCategory(null)
-              }}
-              disabled={formLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={formLoading}
-            >
-              {formLoading ? 'Deleting...' : 'Delete'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+          </DialogContent>
         </Dialog>
       </div>
     </AppLayout>

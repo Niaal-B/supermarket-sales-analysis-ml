@@ -83,7 +83,7 @@ function AppRoutes() {
       <Route
         path="/billing"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['staff']}>
             <Billing />
           </ProtectedRoute>
         }
@@ -131,7 +131,7 @@ function AppRoutes() {
       <Route
         path="/reports"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin', 'sales_manager']}>
             <Reports />
           </ProtectedRoute>
         }

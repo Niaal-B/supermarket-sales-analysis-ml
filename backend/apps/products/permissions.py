@@ -16,10 +16,10 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return request.user and request.user.is_authenticated
         
-        # Write permissions only for admin
+        # Write permissions for admin and sales_manager
         return (
             request.user and
             request.user.is_authenticated and
-            request.user.role == 'admin'
+            request.user.role in ['admin', 'sales_manager']
         )
 
