@@ -81,14 +81,14 @@ class StockTransferCreateSerializer(StockTransferSerializer):
             'approved_by_username'
         ]
     
-    def validate_from_shop(self, value):
-        """Validate that sales manager can only request from their shop"""
+    def validate_to_shop(self, value):
+        """Validate that sales manager can only request TO their shop"""
         request = self.context.get('request')
         if request and request.user.role == 'sales_manager':
             if not request.user.shop:
                 raise serializers.ValidationError('You must be assigned to a shop to request transfers.')
             if value.id != request.user.shop_id:
-                raise serializers.ValidationError('You can only request transfers from your assigned shop.')
+                raise serializers.ValidationError('You can only request transfers TO your assigned shop.')
         return value
     
     def create(self, validated_data):

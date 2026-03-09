@@ -58,7 +58,10 @@ export default function Dashboard() {
     total_sales: 0,
     average_sale: 0,
   })
-  const isStaff = user?.role === 'staff'
+  const role = user?.role
+  const isStaff = role === 'staff'
+  const isAdmin = role === 'admin'
+  const isSalesManager = role === 'sales_manager'
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -151,280 +154,443 @@ export default function Dashboard() {
     <AppLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Dashboard</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">
+            {isAdmin && 'Admin Overview'}
+            {isSalesManager && 'Sales Manager Dashboard'}
+            {isStaff && 'Staff Workspace'}
+          </h2>
           <p className="text-gray-600">Welcome back, {user?.username}!</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="card-hover border-0 shadow-soft bg-gradient-to-br from-white to-green-50/50 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="label-text text-gray-700">Total Shops</CardTitle>
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-glow">
-                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900 mb-1">{shopCount}</div>
-              <p className="caption">Active shops</p>
-            </CardContent>
-          </Card>
-
-          <Card className="card-hover border-0 shadow-soft bg-gradient-to-br from-white to-blue-50/50 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="label-text text-gray-700">Total Categories</CardTitle>
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-glow-blue">
-                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900 mb-1">{categoryCount}</div>
-              <p className="caption">Product categories</p>
-            </CardContent>
-          </Card>
-
-          <Card className="card-hover border-0 shadow-soft bg-gradient-to-br from-white to-indigo-50/50 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="label-text text-gray-700">Total Products</CardTitle>
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-glow-blue">
-                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900 mb-1">{productCount}</div>
-              <p className="caption">Products in catalog</p>
-            </CardContent>
-          </Card>
-
-          {!isStaff && (
-            <Card className="card-hover border-0 shadow-soft bg-gradient-to-br from-white to-purple-50/50 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="label-text text-gray-700">Total Revenue</CardTitle>
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-glow">
-                  <DollarSign className="h-5 w-5 text-white" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-gray-900 mb-1">
-                  {loading ? '...' : formatCurrency(salesSummary.total_revenue)}
-                </div>
-                <p className="caption">Last 30 days</p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
-        {/* Sales Stats Cards - Hidden for Staff */}
-        {!isStaff && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="border-0 shadow-soft">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
-                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{loading ? '...' : salesSummary.total_sales}</div>
-                <p className="text-xs text-muted-foreground mt-1">Transactions (30 days)</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-soft">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Average Sale</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {loading ? '...' : formatCurrency(salesSummary.average_sale)}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">Per transaction</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-soft">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Revenue Trend</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {salesData.length > 1 && !loading
-                    ? salesData[salesData.length - 1].total_revenue > salesData[0].total_revenue
-                      ? '↑'
-                      : '↓'
-                    : '—'}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">vs previous period</p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Charts - Hidden for Staff */}
-        {!isStaff && !loading && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Revenue Area Chart */}
-            {salesData.length > 0 && (
-              <Card className="border-0 shadow-soft overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-white to-green-50/30 border-b border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="heading-4 text-gray-900">Revenue Performance</CardTitle>
-                      <CardDescription>Daily revenue trends (Last 30 Days)</CardDescription>
-                    </div>
-                    <div className="p-2 bg-green-100 rounded-lg text-green-600">
-                      <TrendingUp className="w-5 h-5" />
-                    </div>
+        {/* ADMIN DASHBOARD */}
+        {isAdmin && (
+          <>
+            {/* Global Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <Card className="card-hover border-0 shadow-soft bg-gradient-to-br from-slate-900 to-slate-700 text-white animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="label-text text-slate-100">Total Shops</CardTitle>
+                  <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-6">
-                  <ResponsiveContainer width="100%" height={320}>
-                    <AreaChart data={salesData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                      <XAxis
-                        dataKey="period"
-                        tickFormatter={formatDate}
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: '#94a3b8', fontSize: 12 }}
-                        dy={10}
-                      />
+                <CardContent>
+                  <div className="text-3xl font-bold mb-1">{shopCount}</div>
+                  <p className="caption text-slate-200/80">Active shops</p>
+                </CardContent>
+              </Card>
+
+              <Card className="card-hover border-0 shadow-soft bg-gradient-to-br from-blue-600 to-indigo-600 text-white animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="label-text text-blue-50">Total Categories</CardTitle>
+                  <div className="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center">
+                    <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold mb-1">{categoryCount}</div>
+                  <p className="caption text-blue-100/80">Product categories</p>
+                </CardContent>
+              </Card>
+
+              <Card className="card-hover border-0 shadow-soft bg-gradient-to-br from-emerald-500 to-emerald-600 text-white animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="label-text text-emerald-50">Total Products</CardTitle>
+                  <div className="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center">
+                    <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold mb-1">{productCount}</div>
+                  <p className="caption text-emerald-100/80">Products in catalog</p>
+                </CardContent>
+              </Card>
+
+              <Card className="card-hover border-0 shadow-soft bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="label-text text-fuchsia-50">Total Revenue (30d)</CardTitle>
+                  <div className="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center">
+                    <DollarSign className="h-5 w-5 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold mb-1">
+                    {loading ? '...' : formatCurrency(salesSummary.total_revenue)}
+                  </div>
+                  <p className="caption text-fuchsia-100/80">Across all shops</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Admin Sales KPIs */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card className="border-0 shadow-soft bg-white">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Sales (30d)</CardTitle>
+                  <ShoppingCart className="h-4 w-4 text-emerald-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{loading ? '...' : salesSummary.total_sales}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Transactions across all shops</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-soft bg-white">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Average Ticket Size</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-indigo-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {loading ? '...' : formatCurrency(salesSummary.average_sale)}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">Per transaction</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-soft bg-white">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Revenue Trend</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-rose-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {salesData.length > 1 && !loading
+                      ? salesData[salesData.length - 1].total_revenue > salesData[0].total_revenue
+                        ? '↑'
+                        : '↓'
+                      : '—'}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">vs start of period</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Admin Charts */}
+            {!loading && (
+              <div className="space-y-6 mb-8">
+                {salesData.length > 0 && (
+                  <Card className="border-0 shadow-soft overflow-hidden">
+                    <CardHeader className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white border-b border-slate-800">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="heading-4 text-white">Daily Revenue Trend</CardTitle>
+                          <CardDescription className="text-slate-200">
+                            How much you made each day (Last 30 days)
+                          </CardDescription>
+                        </div>
+                        <div className="p-2 bg-white/10 rounded-lg text-emerald-300">
+                          <TrendingUp className="w-5 h-5" />
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-8 pb-4 bg-slate-950/40">
+                      <ResponsiveContainer width="100%" height={400}>
+                        <AreaChart data={salesData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#22c55e" stopOpacity={0.4} />
+                              <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                          <XAxis
+                            dataKey="period"
+                            tickFormatter={formatDate}
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: '#9ca3af', fontSize: 13 }}
+                            dy={10}
+                          />
+                          <YAxis
+                            tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: '#9ca3af', fontSize: 13 }}
+                          />
+                          <Tooltip content={<CustomTooltip currency={true} />} />
+                          <Area
+                            type="monotone"
+                            dataKey="total_revenue"
+                            stroke="#22c55e"
+                            strokeWidth={4}
+                            fillOpacity={1}
+                            fill="url(#colorRevenue)"
+                            animationDuration={1500}
+                            name="Revenue"
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+
+            {/* Admin Top Products */}
+            {!loading && topProducts.length > 0 && (
+              <Card className="mb-8 border-0 shadow-soft overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-800 text-white border-b border-slate-700/70">
+                  <CardTitle className="heading-4 text-white">Bestselling Items</CardTitle>
+                  <CardDescription className="text-slate-200">
+                    Which products are moving the fastest (Last 30 days)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-8 pb-4 bg-slate-950/40">
+                  <ResponsiveContainer width="100%" height={400}>
+                    <BarChart data={topProducts} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#1f2937" />
+                      <XAxis type="number" hide />
                       <YAxis
-                        tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
+                        dataKey="product_name"
+                        type="category"
+                        width={180}
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#94a3b8', fontSize: 12 }}
+                        tick={{ fill: '#e5e7eb', fontSize: 13, fontWeight: 500 }}
                       />
-                      <Tooltip content={<CustomTooltip currency={true} />} />
-                      <Area
-                        type="monotone"
-                        dataKey="total_revenue"
-                        stroke="#10b981"
-                        strokeWidth={3}
-                        fillOpacity={1}
-                        fill="url(#colorRevenue)"
+                      <Tooltip content={<CustomTooltip />} cursor={{ fill: '#020617', opacity: 0.4 }} />
+                      <Bar
+                        dataKey="total_quantity"
+                        fill="url(#colorBar)"
+                        name="Quantity Sold"
+                        radius={[0, 4, 4, 0]}
                         animationDuration={1500}
-                        name="Revenue"
-                      />
-                    </AreaChart>
+                        barSize={30}
+                      >
+                        <defs>
+                          <linearGradient id="colorBar" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="#4f46e5" />
+                            <stop offset="100%" stopColor="#38bdf8" />
+                          </linearGradient>
+                        </defs>
+                      </Bar>
+                    </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
             )}
+          </>
+        )}
 
-            {/* Payment Methods Distribution */}
-            {paymentData.length > 0 && (
-              <Card className="border-0 shadow-soft overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-white to-blue-50/30 border-b border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="heading-4 text-gray-900">Payment Breakdown</CardTitle>
-                      <CardDescription>Revenue share by channel</CardDescription>
-                    </div>
-                    <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
-                      <DollarSign className="w-5 h-5" />
-                    </div>
+        {/* SALES MANAGER DASHBOARD */}
+        {isSalesManager && (
+          <>
+            {/* Manager Focus Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card className="border-0 shadow-soft bg-gradient-to-br from-emerald-50 to-emerald-100">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <div>
+                    <CardTitle className="text-sm font-medium text-emerald-900">Your Assigned Shop</CardTitle>
+                    <CardDescription className="text-emerald-700">
+                      You are responsible for this location
+                    </CardDescription>
+                  </div>
+                  <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9l9-6 9 6-9 6-9-6zm9 6v6" />
+                    </svg>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-6">
-                  <ResponsiveContainer width="100%" height={320}>
-                    <PieChart>
-                      <Pie
-                        data={paymentData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={100}
-                        paddingAngle={5}
-                        dataKey="total_revenue"
-                        animationDuration={1500}
-                      >
-                        {paymentData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip content={<CustomTooltip currency={true} />} />
-                      <Legend
-                        verticalAlign="bottom"
-                        height={36}
-                        formatter={(value) => <span className="text-sm font-medium text-gray-600">{value}</span>}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
+                <CardContent>
+                  <div className="text-xl font-semibold text-emerald-900 mb-1">
+                    {user?.shop?.name || 'No shop assigned'}
+                  </div>
+                  <p className="text-xs text-emerald-800/80">
+                    Contact admin if this assignment is incorrect.
+                  </p>
                 </CardContent>
               </Card>
+
+              <Card className="border-0 shadow-soft bg-gradient-to-br from-blue-50 to-sky-100">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-sky-900">Sales (Last 30 days)</CardTitle>
+                  <TrendingUp className="h-5 w-5 text-sky-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-sky-900">
+                    {loading ? '...' : formatCurrency(salesSummary.total_revenue)}
+                  </div>
+                  <p className="text-xs text-sky-800/80 mt-1">Revenue for your shop</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-soft bg-gradient-to-br from-amber-50 to-orange-100">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-amber-900">Average Bill</CardTitle>
+                  <DollarSign className="h-5 w-5 text-amber-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-amber-900">
+                    {loading ? '...' : formatCurrency(salesSummary.average_sale)}
+                  </div>
+                  <p className="text-xs text-amber-800/80 mt-1">Per customer transaction</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Manager Charts */}
+            {!loading && (
+              <div className="space-y-6 mb-8">
+                {salesData.length > 0 && (
+                  <Card className="border-0 shadow-soft overflow-hidden bg-white">
+                    <CardHeader className="border-b border-gray-100">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="heading-4 text-gray-900">Daily Sales Trend</CardTitle>
+                          <CardDescription>Simple view of your shop&apos;s daily revenue</CardDescription>
+                        </div>
+                        <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600">
+                          <TrendingUp className="w-5 h-5" />
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-8">
+                      <ResponsiveContainer width="100%" height={400}>
+                        <AreaChart data={salesData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="colorRevenueManager" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3} />
+                              <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                          <XAxis
+                            dataKey="period"
+                            tickFormatter={formatDate}
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: '#6b7280', fontSize: 13 }}
+                            dy={10}
+                          />
+                          <YAxis
+                            tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: '#6b7280', fontSize: 13 }}
+                          />
+                          <Tooltip content={<CustomTooltip currency={true} />} />
+                          <Area
+                            type="monotone"
+                            dataKey="total_revenue"
+                            stroke="#0ea5e9"
+                            strokeWidth={4}
+                            fillOpacity={1}
+                            fill="url(#colorRevenueManager)"
+                            animationDuration={1500}
+                            name="Revenue"
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
             )}
-          </div>
+
+            {/* Manager Tips */}
+            <Card className="border-0 shadow-soft bg-gradient-to-br from-sky-50 to-emerald-50 mb-4">
+              <CardHeader>
+                <CardTitle className="heading-4 text-gray-900">Next Best Actions</CardTitle>
+                <CardDescription>
+                  Quick suggestions based on your recent performance
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-gray-700">
+                <p>• Review low-performing products and consider promotions or repositioning.</p>
+                <p>• Monitor payment mix and ensure POS and UPI channels are always available.</p>
+                <p>• Track peak hours using sales trends and optimize staffing accordingly.</p>
+              </CardContent>
+            </Card>
+          </>
         )}
 
-        {/* Top Products - Hidden for Staff */}
-        {!isStaff && !loading && topProducts.length > 0 && (
-          <Card className="mb-8 border-0 shadow-soft overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-white to-primary/5 border-b border-gray-100">
-              <CardTitle className="heading-4 text-gray-900">Top Performing Products</CardTitle>
-              <CardDescription>Best sellers by quantity (Last 30 Days)</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <ResponsiveContainer width="100%" height={320}>
-                <BarChart data={topProducts} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f0f0f0" />
-                  <XAxis type="number" hide />
-                  <YAxis
-                    dataKey="product_name"
-                    type="category"
-                    width={150}
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: '#475569', fontSize: 13, fontWeight: 500 }}
-                  />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8fafc' }} />
-                  <Bar
-                    dataKey="total_quantity"
-                    fill="url(#colorBar)"
-                    name="Quantity Sold"
-                    radius={[0, 4, 4, 0]}
-                    animationDuration={1500}
-                  >
-                    <defs>
-                      <linearGradient id="colorBar" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#3b82f6" />
-                        <stop offset="100%" stopColor="#60a5fa" />
-                      </linearGradient>
-                    </defs>
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        )}
+        {/* STAFF DASHBOARD */}
+        {isStaff && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card className="border-0 shadow-soft bg-gradient-to-br from-white to-sky-50">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <div>
+                    <CardTitle className="text-sm font-medium text-gray-900">Today&apos;s Overview</CardTitle>
+                    <CardDescription>Quick snapshot of key context</CardDescription>
+                  </div>
+                  <div className="w-10 h-10 rounded-lg bg-sky-500 text-white flex items-center justify-center">
+                    <ShoppingCart className="h-5 w-5" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-3 text-xs text-gray-700">
+                    <div>
+                      <p className="font-semibold">Shops</p>
+                      <p className="text-lg font-bold text-gray-900">{shopCount}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold">Categories</p>
+                      <p className="text-lg font-bold text-gray-900">{categoryCount}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold">Products</p>
+                      <p className="text-lg font-bold text-gray-900">{productCount}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-        {/* Welcome Card */}
-        <Card className="border-0 shadow-soft bg-gradient-to-br from-white to-primary/5">
-          <CardHeader>
-            <CardTitle className="heading-3 text-gray-900">Welcome to Supermarket Sales System</CardTitle>
-            <CardDescription className="body-medium mt-2">
-              Manage your supermarket operations efficiently
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="body-medium text-gray-700">
-              This is your dashboard. Use the sidebar to navigate to different sections.
-              Here you can view key metrics and manage shops, products, sales, and inventory.
-            </p>
-          </CardContent>
-        </Card>
+              <Card className="border-0 shadow-soft bg-gradient-to-br from-emerald-50 to-emerald-100">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-emerald-900">Your Role</CardTitle>
+                  <CardDescription className="text-emerald-800/80">
+                    Day-to-day responsibilities
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-emerald-900 space-y-1">
+                  <p>• Record sales accurately and issue bills.</p>
+                  <p>• Keep track of stock-outs and inform your manager.</p>
+                  <p>• Maintain cleanliness and customer experience at the counter.</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-soft bg-gradient-to-br from-amber-50 to-orange-100">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-amber-900">Quick Shortcuts</CardTitle>
+                  <CardDescription className="text-amber-800/80">
+                    Frequently used sections
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-xs text-amber-900">
+                    <li>• Go to `Sales` to create a new bill.</li>
+                    <li>• Use `Inventory` to quickly check product availability.</li>
+                    <li>• View `Transfers` to track stock movements.</li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="border-0 shadow-soft bg-gradient-to-br from-white to-sky-50">
+              <CardHeader>
+                <CardTitle className="heading-3 text-gray-900">Welcome to your workspace</CardTitle>
+                <CardDescription className="body-medium mt-2">
+                  Focused view for billing and shop operations
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="body-medium text-gray-700">
+                  Use the sidebar on the left to quickly move between billing, products, and inventory.
+                  This dashboard is simplified for speed so you can complete customer checkouts without distraction.
+                  For detailed analytics and configuration, your manager or admin can use their dashboards.
+                </p>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
     </AppLayout>
   )

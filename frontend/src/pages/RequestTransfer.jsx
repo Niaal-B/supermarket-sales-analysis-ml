@@ -39,7 +39,7 @@ export default function RequestTransfer() {
     fetchProducts()
   }, [])
 
-  // Set default from_shop for sales_manager
+  // Set default to_shop for sales_manager
   useEffect(() => {
     if (user?.role === 'sales_manager' && user?.shop && shops.length > 0) {
       // Handle shop as object or ID
@@ -49,11 +49,11 @@ export default function RequestTransfer() {
       } else if (typeof user.shop === 'number') {
         shopId = user.shop
       }
-      
+
       if (shopId) {
         const shopExists = shops.some(s => s.id === shopId)
-        if (shopExists && !formData.from_shop) {
-          setFormData(prev => ({ ...prev, from_shop: shopId.toString() }))
+        if (shopExists && !formData.to_shop) {
+          setFormData(prev => ({ ...prev, to_shop: shopId.toString() }))
         }
       }
     }
@@ -106,14 +106,14 @@ export default function RequestTransfer() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!formData.from_shop || !formData.to_shop || !formData.product || !formData.quantity) {
       toast.error('Please fill in all required fields')
       return
     }
 
     if (formData.from_shop === formData.to_shop) {
-      toast.error('Cannot transfer to the same shop')
+      toast.error('Cannot transfer from the same shop')
       return
     }
 
@@ -123,7 +123,7 @@ export default function RequestTransfer() {
     }
 
     if (parseInt(formData.quantity) > availableStock) {
-      toast.error(`Insufficient stock. Available: ${availableStock}`)
+      toast.error(`Insufficient stock in source shop. Available: ${availableStock}`)
       return
     }
 
@@ -139,12 +139,12 @@ export default function RequestTransfer() {
 
       await api.post('/transfers/', payload)
       toast.success('Transfer request created successfully')
-      
+
       // Reset form
       setFormData({
-        from_shop: user?.role === 'sales_manager' && user?.shop ? 
+        from_shop: '',
+        to_shop: user?.role === 'sales_manager' && user?.shop ?
           (typeof user.shop === 'object' ? user.shop.id : user.shop).toString() : '',
-        to_shop: '',
         product: '',
         quantity: '',
         notes: '',
@@ -159,8 +159,8 @@ export default function RequestTransfer() {
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Reset product and quantity when shop changes
-    if (field === 'from_shop' || field === 'to_shop') {
+    // Reset product and quantity when from_shop changes
+    if (field === 'from_shop') {
       setFormData(prev => ({ ...prev, product: '', quantity: '' }))
       setAvailableStock(0)
     }
@@ -193,142 +193,142 @@ export default function RequestTransfer() {
         <div className="mb-6">
           <h1 className="heading-2 text-gray-900 flex items-center gap-2">
             <Package className="h-6 w-6" />
-            Request Stock Transfer
+            Request Stock Inward
           </h1>
-          <p className="body-small text-muted-foreground mt-1">Request to transfer stock from one shop to another</p>
+          <p className="body-small text-muted-foreground mt-1">Request to transfer stock from another shop to your shop</p>
         </div>
         <Card className="border-0 shadow-soft">
           <CardContent className="pt-6">
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* From Shop */}
-            <div className="space-y-2">
-              <Label htmlFor="from_shop">From Shop *</Label>
-              <Select
-                value={formData.from_shop}
-                onValueChange={(value) => handleChange('from_shop', value)}
-                disabled={user?.role === 'sales_manager'}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select source shop" />
-                </SelectTrigger>
-                <SelectContent>
-                  {shops.map((shop) => (
-                    <SelectItem key={shop.id} value={shop.id.toString()}>
-                      {shop.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {user?.role === 'sales_manager' && (
-                <p className="text-sm text-muted-foreground">
-                  Your assigned shop: {fromShopName}
-                </p>
-              )}
-            </div>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* From Shop */}
+                <div className="space-y-2">
+                  <Label htmlFor="from_shop">From Shop (Source) *</Label>
+                  <Select
+                    value={formData.from_shop}
+                    onValueChange={(value) => handleChange('from_shop', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select source shop" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {shops
+                        .filter(shop => shop.id !== parseInt(formData.to_shop))
+                        .map((shop) => (
+                          <SelectItem key={shop.id} value={shop.id.toString()}>
+                            {shop.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* To Shop */}
-            <div className="space-y-2">
-              <Label htmlFor="to_shop">To Shop *</Label>
-              <Select
-                value={formData.to_shop}
-                onValueChange={(value) => handleChange('to_shop', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select destination shop" />
-                </SelectTrigger>
-                <SelectContent>
-                  {shops
-                    .filter(shop => shop.id !== parseInt(formData.from_shop))
-                    .map((shop) => (
-                      <SelectItem key={shop.id} value={shop.id.toString()}>
-                        {shop.name}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
+                {/* To Shop */}
+                <div className="space-y-2">
+                  <Label htmlFor="to_shop">To Shop (Destination) *</Label>
+                  <Select
+                    value={formData.to_shop}
+                    onValueChange={(value) => handleChange('to_shop', value)}
+                    disabled={user?.role === 'sales_manager'}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select destination shop" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {shops.map((shop) => (
+                        <SelectItem key={shop.id} value={shop.id.toString()}>
+                          {shop.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {user?.role === 'sales_manager' && (
+                    <p className="text-sm text-muted-foreground">
+                      Your shop: {toShopName}
+                    </p>
+                  )}
+                </div>
 
-            {/* Product */}
-            <div className="space-y-2">
-              <Label htmlFor="product">Product *</Label>
-              <Select
-                value={formData.product}
-                onValueChange={(value) => handleChange('product', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select product" />
-                </SelectTrigger>
-                <SelectContent>
-                  {products.map((product) => (
-                    <SelectItem key={product.id} value={product.id.toString()}>
-                      {product.name} - {product.category_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {formData.from_shop && formData.product && (
-                <p className="text-sm text-muted-foreground">
-                  Available stock: <span className="font-semibold">{availableStock}</span>
-                </p>
-              )}
-            </div>
+                {/* Product */}
+                <div className="space-y-2">
+                  <Label htmlFor="product">Product *</Label>
+                  <Select
+                    value={formData.product}
+                    onValueChange={(value) => handleChange('product', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select product" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {products.map((product) => (
+                        <SelectItem key={product.id} value={product.id.toString()}>
+                          {product.name} - {product.category_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {formData.from_shop && formData.product && (
+                    <p className="text-sm text-muted-foreground">
+                      Available stock: <span className="font-semibold">{availableStock}</span>
+                    </p>
+                  )}
+                </div>
 
-            {/* Quantity */}
-            <div className="space-y-2">
-              <Label htmlFor="quantity">Quantity *</Label>
-              <Input
-                id="quantity"
-                type="number"
-                min="1"
-                value={formData.quantity}
-                onChange={(e) => handleChange('quantity', e.target.value)}
-                placeholder="Enter quantity"
-              />
-              {formData.quantity && parseInt(formData.quantity) > availableStock && (
-                <p className="text-sm text-destructive">
-                  Insufficient stock. Available: {availableStock}
-                </p>
-              )}
-            </div>
+                {/* Quantity */}
+                <div className="space-y-2">
+                  <Label htmlFor="quantity">Quantity *</Label>
+                  <Input
+                    id="quantity"
+                    type="number"
+                    min="1"
+                    value={formData.quantity}
+                    onChange={(e) => handleChange('quantity', e.target.value)}
+                    placeholder="Enter quantity"
+                  />
+                  {formData.quantity && parseInt(formData.quantity) > availableStock && (
+                    <p className="text-sm text-destructive">
+                      Insufficient stock. Available: {availableStock}
+                    </p>
+                  )}
+                </div>
 
-            {/* Notes */}
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes (Optional)</Label>
-              <textarea
-                id="notes"
-                value={formData.notes}
-                onChange={(e) => handleChange('notes', e.target.value)}
-                placeholder="Add any notes about this transfer request..."
-                rows={3}
-                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </div>
+                {/* Notes */}
+                <div className="space-y-2">
+                  <Label htmlFor="notes">Notes (Optional)</Label>
+                  <textarea
+                    id="notes"
+                    value={formData.notes}
+                    onChange={(e) => handleChange('notes', e.target.value)}
+                    placeholder="Add any notes about this transfer request..."
+                    rows={3}
+                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                </div>
 
-            {/* Summary */}
-            {formData.from_shop && formData.to_shop && formData.product && formData.quantity && (
-              <Card className="bg-muted">
-                <CardContent className="pt-6">
-                  <div className="space-y-2">
-                    <h4 className="font-semibold">Transfer Summary</h4>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="font-medium">{formData.quantity}x</span>
-                      <span>{productName}</span>
-                      <ArrowRight className="h-4 w-4 mx-2" />
-                      <span className="font-medium">{fromShopName}</span>
-                      <ArrowRight className="h-4 w-4 mx-2" />
-                      <span className="font-medium">{toShopName}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                {/* Summary */}
+                {formData.from_shop && formData.to_shop && formData.product && formData.quantity && (
+                  <Card className="bg-muted">
+                    <CardContent className="pt-6">
+                      <div className="space-y-2">
+                        <h4 className="font-semibold">Transfer Summary</h4>
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="font-medium">{formData.quantity}x</span>
+                          <span>{productName}</span>
+                          <ArrowRight className="h-4 w-4 mx-2" />
+                          <span className="font-medium">{fromShopName}</span>
+                          <ArrowRight className="h-4 w-4 mx-2" />
+                          <span className="font-medium">{toShopName}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
-            <Button type="submit" disabled={submitting} className="w-full">
-              {submitting ? 'Submitting...' : 'Request Transfer'}
-            </Button>
-          </form>
-        </CardContent>
+                <Button type="submit" disabled={submitting} className="w-full">
+                  {submitting ? 'Submitting...' : 'Request Transfer'}
+                </Button>
+              </form>
+            </CardContent>
           </CardContent>
         </Card>
       </div>
