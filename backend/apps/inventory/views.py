@@ -27,14 +27,13 @@ class StockListCreateView(generics.ListCreateAPIView):
         """
         queryset = Stock.objects.select_related('shop', 'product', 'product__category').all()
         
-        # Sales Manager can only see their shop's stock
-        if self.request.user.role == 'sales_manager' and self.request.user.shop:
-            queryset = queryset.filter(shop=self.request.user.shop)
-        
-        # Filter by shop
+        # Filter by shop (query param takes precedence for transfer visibility)
         shop_id = self.request.query_params.get('shop_id', None)
         if shop_id:
             queryset = queryset.filter(shop_id=shop_id)
+        elif self.request.user.role == 'sales_manager' and self.request.user.shop:
+            # Default to their own shop if no shop_id provided
+            queryset = queryset.filter(shop=self.request.user.shop)
         
         # Filter by product
         product_id = self.request.query_params.get('product_id', None)
