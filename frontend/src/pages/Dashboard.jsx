@@ -274,15 +274,15 @@ export default function Dashboard() {
 
             {/* Admin Charts */}
             {!loading && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <div className="space-y-6 mb-8">
                 {salesData.length > 0 && (
                   <Card className="border-0 shadow-soft overflow-hidden">
                     <CardHeader className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white border-b border-slate-800">
                       <div className="flex items-center justify-between">
                         <div>
-                          <CardTitle className="heading-4 text-white">Revenue Performance</CardTitle>
+                          <CardTitle className="heading-4 text-white">Daily Revenue Trend</CardTitle>
                           <CardDescription className="text-slate-200">
-                            Daily revenue (Last 30 days)
+                            How much you made each day (Last 30 days)
                           </CardDescription>
                         </div>
                         <div className="p-2 bg-white/10 rounded-lg text-emerald-300">
@@ -290,8 +290,8 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent className="pt-6 bg-slate-950/40">
-                      <ResponsiveContainer width="100%" height={320}>
+                    <CardContent className="pt-8 pb-4 bg-slate-950/40">
+                      <ResponsiveContainer width="100%" height={400}>
                         <AreaChart data={salesData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                           <defs>
                             <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -305,73 +305,27 @@ export default function Dashboard() {
                             tickFormatter={formatDate}
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#9ca3af', fontSize: 12 }}
+                            tick={{ fill: '#9ca3af', fontSize: 13 }}
                             dy={10}
                           />
                           <YAxis
                             tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#9ca3af', fontSize: 12 }}
+                            tick={{ fill: '#9ca3af', fontSize: 13 }}
                           />
                           <Tooltip content={<CustomTooltip currency={true} />} />
                           <Area
                             type="monotone"
                             dataKey="total_revenue"
                             stroke="#22c55e"
-                            strokeWidth={3}
+                            strokeWidth={4}
                             fillOpacity={1}
                             fill="url(#colorRevenue)"
                             animationDuration={1500}
                             name="Revenue"
                           />
                         </AreaChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {paymentData.length > 0 && (
-                  <Card className="border-0 shadow-soft overflow-hidden">
-                    <CardHeader className="bg-gradient-to-r from-indigo-600 to-sky-600 text-white border-b border-indigo-500/40">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="heading-4 text-white">Payment Breakdown</CardTitle>
-                          <CardDescription className="text-indigo-100">
-                            Revenue share by payment channel
-                          </CardDescription>
-                        </div>
-                        <div className="p-2 bg-white/10 rounded-lg text-yellow-300">
-                          <DollarSign className="w-5 h-5" />
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-6 bg-slate-950/5">
-                      <ResponsiveContainer width="100%" height={320}>
-                        <PieChart>
-                          <Pie
-                            data={paymentData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={100}
-                            paddingAngle={5}
-                            dataKey="total_revenue"
-                            animationDuration={1500}
-                          >
-                            {paymentData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip content={<CustomTooltip currency={true} />} />
-                          <Legend
-                            verticalAlign="bottom"
-                            height={36}
-                            formatter={(value) => (
-                              <span className="text-sm font-medium text-slate-700">{value}</span>
-                            )}
-                          />
-                        </PieChart>
                       </ResponsiveContainer>
                     </CardContent>
                   </Card>
@@ -383,13 +337,13 @@ export default function Dashboard() {
             {!loading && topProducts.length > 0 && (
               <Card className="mb-8 border-0 shadow-soft overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-800 text-white border-b border-slate-700/70">
-                  <CardTitle className="heading-4 text-white">Top Performing Products</CardTitle>
+                  <CardTitle className="heading-4 text-white">Bestselling Items</CardTitle>
                   <CardDescription className="text-slate-200">
-                    Best sellers by quantity (Last 30 days)
+                    Which products are moving the fastest (Last 30 days)
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-6 bg-slate-950/40">
-                  <ResponsiveContainer width="100%" height={320}>
+                <CardContent className="pt-8 pb-4 bg-slate-950/40">
+                  <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={topProducts} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#1f2937" />
                       <XAxis type="number" hide />
@@ -401,13 +355,14 @@ export default function Dashboard() {
                         tickLine={false}
                         tick={{ fill: '#e5e7eb', fontSize: 13, fontWeight: 500 }}
                       />
-                      <Tooltip content={<CustomTooltip />} cursor={{ fill: '#020617' }} />
+                      <Tooltip content={<CustomTooltip />} cursor={{ fill: '#020617', opacity: 0.4 }} />
                       <Bar
                         dataKey="total_quantity"
                         fill="url(#colorBar)"
                         name="Quantity Sold"
                         radius={[0, 4, 4, 0]}
                         animationDuration={1500}
+                        barSize={30}
                       >
                         <defs>
                           <linearGradient id="colorBar" x1="0" y1="0" x2="1" y2="0">
@@ -482,22 +437,22 @@ export default function Dashboard() {
 
             {/* Manager Charts */}
             {!loading && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <div className="space-y-6 mb-8">
                 {salesData.length > 0 && (
                   <Card className="border-0 shadow-soft overflow-hidden bg-white">
                     <CardHeader className="border-b border-gray-100">
                       <div className="flex items-center justify-between">
                         <div>
                           <CardTitle className="heading-4 text-gray-900">Daily Sales Trend</CardTitle>
-                          <CardDescription>Track how your shop is performing</CardDescription>
+                          <CardDescription>Simple view of your shop&apos;s daily revenue</CardDescription>
                         </div>
                         <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600">
                           <TrendingUp className="w-5 h-5" />
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent className="pt-6">
-                      <ResponsiveContainer width="100%" height={300}>
+                    <CardContent className="pt-8">
+                      <ResponsiveContainer width="100%" height={400}>
                         <AreaChart data={salesData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                           <defs>
                             <linearGradient id="colorRevenueManager" x1="0" y1="0" x2="0" y2="1">
@@ -511,73 +466,27 @@ export default function Dashboard() {
                             tickFormatter={formatDate}
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#6b7280', fontSize: 12 }}
+                            tick={{ fill: '#6b7280', fontSize: 13 }}
                             dy={10}
                           />
                           <YAxis
                             tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#6b7280', fontSize: 12 }}
+                            tick={{ fill: '#6b7280', fontSize: 13 }}
                           />
                           <Tooltip content={<CustomTooltip currency={true} />} />
                           <Area
                             type="monotone"
                             dataKey="total_revenue"
                             stroke="#0ea5e9"
-                            strokeWidth={3}
+                            strokeWidth={4}
                             fillOpacity={1}
                             fill="url(#colorRevenueManager)"
                             animationDuration={1500}
                             name="Revenue"
                           />
                         </AreaChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {paymentData.length > 0 && (
-                  <Card className="border-0 shadow-soft overflow-hidden bg-white">
-                    <CardHeader className="border-b border-gray-100">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="heading-4 text-gray-900">Payment Mix</CardTitle>
-                          <CardDescription>
-                            Understand which payment modes customers prefer
-                          </CardDescription>
-                        </div>
-                        <div className="p-2 bg-sky-100 rounded-lg text-sky-600">
-                          <DollarSign className="w-5 h-5" />
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-6">
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie
-                            data={paymentData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={100}
-                            paddingAngle={5}
-                            dataKey="total_revenue"
-                            animationDuration={1500}
-                          >
-                            {paymentData.map((entry, index) => (
-                              <Cell key={`cell-manager-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip content={<CustomTooltip currency={true} />} />
-                          <Legend
-                            verticalAlign="bottom"
-                            height={36}
-                            formatter={(value) => (
-                              <span className="text-sm font-medium text-gray-700">{value}</span>
-                            )}
-                          />
-                        </PieChart>
                       </ResponsiveContainer>
                     </CardContent>
                   </Card>
